@@ -12,6 +12,11 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230E2A3A'/%3E%3Cpath d='M32 12c-8 11-14 19-14 27a14 14 0 0 0 28 0c0-8-6-16-14-27z' fill='%23F5C25A'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<!-- Visitor counting (GoatCounter: no cookies, no personal data). Put your GoatCounter code between the quotes to switch it on. -->
+<script>
+const GOATCOUNTER_CODE="";
+if(GOATCOUNTER_CODE){const g=document.createElement("script");g.async=true;g.src="https://gc.zgo.at/count.js";g.dataset.goatcounter="https://"+GOATCOUNTER_CODE+".goatcounter.com/count";document.head.appendChild(g)}
+</script>
 <style>
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0}
@@ -140,6 +145,22 @@ input,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid
 .news .you b{font-weight:700}
 .news a{color:var(--accent);font-size:13px;font-weight:600}
 
+/* Washly's + fleet + sponsor */
+.wash{background:var(--surface);border:2px solid var(--accent);border-radius:16px;padding:18px 20px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center}
+.wash h2{font-size:19px}
+.wash p{font-size:15px}
+.code{font-family:var(--f-data);background:var(--soft);border:1px dashed var(--accent);border-radius:8px;padding:2px 8px;white-space:nowrap}
+.cta{display:inline-flex;align-items:center;justify-content:center;gap:6px;font:inherit;font-weight:700;text-decoration:none;cursor:pointer;border:0;border-radius:999px;padding:12px 20px;background:var(--accent);color:var(--accent-ink);white-space:nowrap}
+.cta.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.cta:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+.contact-line{font-size:13px;color:var(--muted)}
+.contact-line b{color:var(--ink);font-weight:600;user-select:all}
+@media (max-width:560px){.wash{grid-template-columns:1fr}}
+.fleet{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center}
+@media (max-width:560px){.fleet{grid-template-columns:1fr}}
+.sponsor{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:var(--surface);display:flex;flex-direction:column;gap:4px}
+.sponsor .lab{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.sponsor a{color:var(--accent);font-weight:600}
 .sources{font-size:13px;color:var(--muted)}
 .sources a{color:var(--accent)}
 .sources ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
@@ -182,6 +203,18 @@ footer a{color:var(--accent)}
     <div class="row"><div class="lbl">Diesel 50ppm<small id="bDsub"></small></div><div class="px" id="bD"></div></div>
     <p class="foot" id="bFoot"></p>
   </section>
+
+  <section class="wash" id="wash" aria-labelledby="hwash" hidden>
+    <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+      <span class="eyebrow">Washly's · Gqeberha</span>
+      <h2 id="hwash">Saved on fuel? Let us wash the car.</h2>
+      <p>Washly's comes to your home or office anywhere in Gqeberha. Quote <span class="code" id="promoCode"></span> for <span id="promoOffer"></span>.</p>
+      <p class="contact-line" id="washContact"></p>
+    </div>
+    <a class="cta" id="washBtn" target="_blank" rel="noopener" data-track="book-washlys">Book a wash</a>
+  </section>
+
+  <div id="sponsorSlot"></div>
 
   <section class="panel" aria-labelledby="h1s">
     <div class="step"><span class="n">1</span><div class="body">
@@ -249,6 +282,18 @@ footer a{color:var(--accent)}
     <p class="small muted" id="natNote"></p>
   </section>
 
+  <section class="panel" id="fleet" aria-labelledby="hfleet">
+    <div class="fleet">
+      <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+        <span class="eyebrow">For businesses</span>
+        <h2 id="hfleet">Run a fleet? Get a weekly diesel report</h2>
+        <p>Taxis, deliveries, farms, building sites: if you buy a lot of diesel, a few rand a litre adds up fast. We're planning a weekly report for your area with the cheapest stations and the next price change. Register your interest and we'll be in touch.</p>
+        <p class="contact-line" id="fleetContact"></p>
+      </div>
+      <a class="cta ghost" id="fleetBtn" target="_blank" rel="noopener" data-track="fleet-interest">Register interest</a>
+    </div>
+  </section>
+
   <section class="panel" id="news" aria-labelledby="hnews">
     <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline">
       <h2 id="hnews">Fuel news</h2>
@@ -263,12 +308,17 @@ footer a{color:var(--accent)}
     <ul id="srcList"></ul>
   </section>
 
-  <footer>Need a wash? Washly's comes to you anywhere in Gqeberha · <a href="https://www.instagram.com/washlyscarwash/" target="_blank" rel="noopener">@washlyscarwash</a></footer>
+  <footer>Fuel Friend is free, brought to you by Washly's, the mobile car wash in Gqeberha · <a href="https://www.instagram.com/washlyscarwash/" target="_blank" rel="noopener" data-track="instagram">@washlyscarwash</a> · <a id="advLink" target="_blank" rel="noopener" data-track="advertise">Advertise on Fuel Friend</a></footer>
 </main>
 
 <script>
 /* All data checked by hand. Update this block and republish. */
 const DATA={
+  /* Business settings. Leave email "" to fall back to Instagram. */
+  contact:{email:"",instagram:"https://www.instagram.com/washlyscarwash/"},
+  promo:{code:"FUELFRIEND10",offer:"10% off your first wash"},
+  /* Paid placement. null = no sponsor shown. Example: {name:"Acme Tyres",text:"10% off tyres in Gqeberha",url:"https://...",cities:["gqb"]} (cities optional = everywhere) */
+  sponsor:null,
   updated:"2026-10-23",
   official:{label:"October 2026",effective:"2026-10-07",
     coastal:{p95:29.38,p93:29.01,d50w:31.93},inland:{p95:30.25,p93:29.88,d50w:32.80},
@@ -443,11 +493,35 @@ function renderNational(){
 }
 $("#natRows").onclick=e=>{const a=e.target.closest("[data-c]");if(a){e.preventDefault();setCity(a.dataset.c);$("#stations").scrollIntoView({behavior:"smooth"})}};
 
+/* contact, Washly's, fleet, sponsor */
+const C=DATA.contact;
+const mail=(subject,body)=>C.email?`mailto:${C.email}?subject=${encodeURIComponent(subject)}${body?"&body="+encodeURIComponent(body):""}`:C.instagram;
+const via=C.email?`Email <b>${esc(C.email)}</b>`:`Message us on Instagram, <b>@washlyscarwash</b>`;
+function renderWash(c){
+  const on=c.id==="gqb";$("#wash").hidden=!on;if(!on)return;
+  $("#promoCode").textContent=DATA.promo.code;$("#promoOffer").textContent=DATA.promo.offer;
+  $("#washBtn").href=mail("Book a Washly's wash",`Hi Washly's, I'd like to book a wash. Promo code: ${DATA.promo.code}\nSuburb:\nCar:\nPreferred day and time:`);
+  $("#washBtn").textContent=C.email?"Email to book":"Book on Instagram";
+  $("#washContact").innerHTML=`${via} to book. New customers only.`;
+}
+function renderFleet(c){
+  $("#fleetBtn").href=mail(`Fleet diesel report: ${c.name.replace(/ \(.*\)/,"")}`,"Business name:\nNumber of vehicles:\nAreas you operate in:\nRoughly how much diesel a month:");
+  $("#fleetContact").innerHTML=`${via} with your business name, how many vehicles you run, and where.`;
+}
+function renderSponsor(c){
+  const sp=DATA.sponsor,el=$("#sponsorSlot");
+  if(!sp||(sp.cities&&!sp.cities.includes(c.id))){el.innerHTML="";return}
+  el.innerHTML=`<aside class="sponsor" aria-label="Sponsored"><span class="lab">Sponsored</span><b>${esc(sp.name)}</b><span>${esc(sp.text)}</span>${sp.url?`<a href="${esc(sp.url)}" target="_blank" rel="noopener sponsored" data-track="sponsor">Find out more</a>`:""}</aside>`;
+}
+$("#advLink").href=mail("Advertising on Fuel Friend","Business name:\nWhat you'd like to promote:\nCities:");
+/* click tracking: works when a page-view counter (GoatCounter) is loaded on the hosted site */
+document.addEventListener("click",e=>{const a=e.target.closest("[data-track]");if(!a)return;try{window.goatcounter&&window.goatcounter.count&&window.goatcounter.count({path:"click-"+a.dataset.track+(a.dataset.track==="book-washlys"||a.dataset.track==="fleet-interest"?"-"+cityId:""),title:a.textContent.trim(),event:true})}catch(_){}});
+
 function setCity(id){
   cityId=id;brand="All";showAll=false;$("#city").value=id;
   try{localStorage.setItem("ff-city",id)}catch(e){}
   const c=byId[id];
-  renderMove(c);renderBoard(c);renderStations(c);renderNational();
+  renderMove(c);renderBoard(c);renderWash(c);renderSponsor(c);renderStations(c);renderNational();renderFleet(c);
   $("#dNear").value=c.median.toFixed(2);$("#dFar").value=c.cheapest.price.toFixed(2);detour();bill();
 }
 $("#city").onchange=()=>setCity($("#city").value);
