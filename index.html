@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Fuel Friend by Washly's</title>
+<meta name="description" content="Spend less on fuel in South Africa: when to fill up, diesel prices by station in 11 cities, rewards cards and fuel news. Brought to you by Washly's mobile car wash.">
+<meta property="og:title" content="Fuel Friend by Washly's">
+<meta property="og:description" content="When to fill up, the cheapest diesel near you, and what's changing in South African fuel prices.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0E2A3A">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230E2A3A'/%3E%3Cpath d='M32 12c-8 11-14 19-14 27a14 14 0 0 0 28 0c0-8-6-16-14-27z' fill='%23F5C25A'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<style>
+/* Layout: single 780px column, phone-first. Forecourt price board for your city, then decisions in the order a driver makes them, a national diesel snapshot, and a dated news feed. */
+:root{
+  --bg:#F2F6F8; --surface:#FFFFFF; --ink:#0E2A3A; --muted:#587080; --line:#D5E1E7;
+  --accent:#0A7BA2; --accent-ink:#FFFFFF; --sun:#F2B33A; --sun-ink:#3A2600; --soft:#E6F1F5;
+  --ok:#23845A; --warn:#B9442B; --board:#0E2A3A; --board-ink:#F2F6F8; --led:#F5C25A;
+  --f-display:"Bricolage Grotesque","Arial Black",system-ui,sans-serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-data:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#09161D; --surface:#0F2430; --ink:#E4F0F4; --muted:#8CA5B2; --line:#1E3947;
+  --accent:#46BFE6; --accent-ink:#04202B; --sun:#F5C25A; --sun-ink:#2A1C00; --soft:#143140;
+  --ok:#5BC48A; --warn:#EF7B63; --board:#050E13; --board-ink:#E4F0F4; --led:#F5C25A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#09161D; --surface:#0F2430; --ink:#E4F0F4; --muted:#8CA5B2; --line:#1E3947;
+  --accent:#46BFE6; --accent-ink:#04202B; --sun:#F5C25A; --sun-ink:#2A1C00; --soft:#143140;
+  --ok:#5BC48A; --warn:#EF7B63; --board:#050E13; --board-ink:#E4F0F4; --led:#F5C25A; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55}
+.wrap{max-width:780px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{padding-block:20px 56px;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.015em;text-wrap:balance;margin:0}
+h1{font-size:clamp(30px,6.5vw,44px);line-height:1.03}
+h2{font-size:21px}
+h3{font-size:17px}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.by{font-size:13px;font-weight:600;color:var(--muted)}
+.by b{font-family:var(--f-display);color:var(--ink)}
+.by b i{font-style:normal;color:var(--sun)}
+.jump{display:flex;gap:6px;flex-wrap:wrap}
+.jump a{font-size:13px;font-weight:600;color:var(--accent);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;background:var(--surface)}
+.jump a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px;scroll-margin-top:16px}
+.banner{border-radius:12px;padding:12px 16px;font-weight:600;background:var(--warn);color:var(--accent-ink)}
+
+.cityrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.cityrow label{flex-direction:row;align-items:center;gap:10px;font-size:15px;color:var(--ink);max-width:100%;min-width:0}
+.cityrow select{width:auto;max-width:100%;min-width:0;font-weight:700;font-size:16px;text-overflow:ellipsis}
+
+/* price board */
+.board{background:var(--board);color:var(--board-ink);border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.board .head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+.board .head b{font-family:var(--f-display);font-size:18px}
+.board .head span{font-size:12px;opacity:.75}
+.board .row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:baseline;padding-block:8px;border-bottom:1px dashed rgba(255,255,255,.18)}
+.board .row:last-of-type{border-bottom:0}
+.board .lbl{font-weight:600}
+.board .lbl small{display:block;font-weight:400;opacity:.7;font-size:13px}
+.board .px{font-family:var(--f-data);font-size:clamp(26px,6vw,34px);color:var(--led);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.board .px small{font-size:14px;opacity:.75}
+.board .foot{font-size:12px;opacity:.7}
+
+/* decision card */
+.move{background:var(--sun);color:var(--sun-ink);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:8px}
+.move h2{font-size:clamp(22px,4.5vw,28px)}
+.move .sub{font-weight:500}
+.move .meta{font-size:13px;opacity:.85}
+.move .nums{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.move .nums span{background:rgba(255,255,255,.45);border-radius:999px;padding:4px 12px;font-weight:700;font-family:var(--f-data);font-size:14px}
+
+.step{display:grid;grid-template-columns:32px minmax(0,1fr);gap:12px}
+.step .n{width:32px;height:32px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-weight:800;font-family:var(--f-display)}
+.step .body{display:flex;flex-direction:column;gap:12px;min-width:0}
+
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+td.n,th.n{font-family:var(--f-data);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+th.n{font-family:var(--f-body)}
+td small{display:block;color:var(--muted);font-size:12px}
+tr.best td{background:var(--soft)}
+tr.best td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+tr.sel td{font-weight:700}
+.tbl{overflow-x:auto}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:6px 12px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.more{font:inherit;font-weight:600;color:var(--accent);background:none;border:0;padding:4px 0;cursor:pointer;align-self:flex-start}
+.brandrow{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,140px),1fr));gap:8px}
+.bt{background:var(--bg);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:1px}
+.bt b{font-size:13px}
+.bt span{font-family:var(--f-data);font-size:18px;font-variant-numeric:tabular-nums}
+.bt small{color:var(--muted);font-size:12px}
+.bt.best{background:var(--soft);box-shadow:inset 0 0 0 1px var(--accent)}
+
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:10px}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:var(--muted)}
+input,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-width:0}
+.answer{border-radius:12px;padding:14px 16px;background:var(--soft);display:flex;flex-direction:column;gap:4px}
+.answer b{font-size:18px}
+.answer.yes b{color:var(--ok)} .answer.no b{color:var(--warn)}
+.answer span{font-size:14px;color:var(--muted)}
+.sums{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:10px}
+.sum{background:var(--bg);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.sum span{font-size:13px;color:var(--muted)}
+.sum b{font-family:var(--f-data);font-weight:500;font-size:22px;font-variant-numeric:tabular-nums}
+.sum.save b{color:var(--ok)}
+.rewards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:8px}
+.rw{background:var(--bg);border-radius:12px;padding:12px 14px}
+.rw b{display:block}
+.rw span{font-size:13px;color:var(--muted)}
+
+/* news */
+.news{display:flex;flex-direction:column;gap:0;list-style:none;margin:0;padding:0}
+.news li{display:grid;grid-template-columns:76px minmax(0,1fr);gap:14px;padding-block:14px;border-bottom:1px solid var(--line)}
+.news li:last-child{border-bottom:0}
+.news time{font-family:var(--f-data);font-size:13px;color:var(--muted);padding-top:2px;line-height:1.3}
+.news time b{display:block;font-size:20px;color:var(--ink);font-weight:500}
+.news .it{display:flex;flex-direction:column;gap:6px;min-width:0}
+.news .tag{align-self:flex-start;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:999px;border:1px solid currentColor}
+.tag.price{color:var(--accent)} .tag.policy{color:var(--ok)} .tag.supply{color:var(--warn)} .tag.public{color:var(--muted)}
+.news .you{font-size:14px;background:var(--bg);border-radius:10px;padding:8px 12px}
+.news .you b{font-weight:700}
+.news a{color:var(--accent);font-size:13px;font-weight:600}
+
+.sources{font-size:13px;color:var(--muted)}
+.sources a{color:var(--accent)}
+.sources ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+footer{font-size:13px;color:var(--muted);text-align:center}
+footer a{color:var(--accent)}
+@media (max-width:480px){.news li{grid-template-columns:1fr;gap:6px}.news time b{display:inline;font-size:15px;margin-right:6px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="top">
+    <span class="eyebrow">South Africa</span>
+    <span class="by">Brought to you by <b>Washly<i>'</i>s</b> mobile car wash</span>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <h1>Fuel Friend</h1>
+    <p class="muted" style="max-width:60ch">Spend less on fuel, wherever you drive in South Africa. Every figure on this page is checked against a source and dated, so you know how fresh it is.</p>
+    <nav class="jump" aria-label="On this page"><a href="#stations">Diesel by station</a><a href="#national">City comparison</a><a href="#news">Fuel news</a></nav>
+  </div>
+
+  <div id="stale" class="banner" hidden></div>
+
+  <section class="move" aria-labelledby="moveH">
+    <span class="eyebrow" style="color:inherit;opacity:.8">This week's best move</span>
+    <h2 id="moveH"></h2>
+    <p class="sub" id="moveSub"></p>
+    <div class="nums" id="moveNums"></div>
+    <p class="meta" id="moveMeta"></p>
+  </section>
+
+  <div class="cityrow">
+    <label for="city">Your city <select id="city"></select></label>
+  </div>
+
+  <section class="board" aria-label="Prices in your city">
+    <div class="head"><b id="bCity"></b><span id="bZone"></span></div>
+    <div class="row"><div class="lbl">Petrol 95<small>Same price at every station in your area</small></div><div class="px" id="b95"></div></div>
+    <div class="row"><div class="lbl">Petrol 93<small>Same price at every station in your area</small></div><div class="px" id="b93"></div></div>
+    <div class="row"><div class="lbl">Diesel 50ppm<small id="bDsub"></small></div><div class="px" id="bD"></div></div>
+    <p class="foot" id="bFoot"></p>
+  </section>
+
+  <section class="panel" aria-labelledby="h1s">
+    <div class="step"><span class="n">1</span><div class="body">
+      <h2 id="h1s">Petrol: shopping around won't help</h2>
+      <p>Government fixes petrol prices for each area, so every station near you charges the same. The ways to pay less are to <b>time your fill-up around price changes</b> and to <b>use a rewards card</b> (step 4).</p>
+    </div></div>
+  </section>
+
+  <section class="panel" id="stations" aria-labelledby="h2s">
+    <div class="step"><span class="n">2</span><div class="body">
+      <h2 id="h2s">Diesel: the station you pick matters</h2>
+      <p>Diesel pump prices aren't regulated. Each station adds its own margin to the government's wholesale price, and nobody has to publish it. Here's what drivers are paying for 50ppm in <b id="stCity"></b>.</p>
+      <div class="brandrow" id="stBrands"></div>
+      <div class="chips" id="brandChips" role="group" aria-label="Filter by brand"></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Station</th><th class="n">Price</th><th class="n">vs cheapest</th></tr></thead>
+        <tbody id="stRows"></tbody>
+      </table></div>
+      <button class="more" id="moreBtn" type="button"></button>
+      <p class="small muted" id="stNote"></p>
+    </div></div>
+  </section>
+
+  <section class="panel" aria-labelledby="h3s">
+    <div class="step"><span class="n">3</span><div class="body">
+      <h2 id="h3s">Is the cheaper station worth the drive?</h2>
+      <p>A cheaper station can cost more once you count the extra kilometres to reach it. Check before you go.</p>
+      <div class="form">
+        <label for="dNear">Your usual station (R/L)<input id="dNear" type="number" step="0.01" min="0"></label>
+        <label for="dFar">Cheaper station (R/L)<input id="dFar" type="number" step="0.01" min="0"></label>
+        <label for="dLit">Litres you'll buy<input id="dLit" type="number" step="1" min="0" value="60"></label>
+        <label for="dKm">Extra km there and back<input id="dKm" type="number" step="0.5" min="0" value="6"></label>
+        <label for="dCons">Your car's L/100 km<input id="dCons" type="number" step="0.1" min="0" value="9"></label>
+      </div>
+      <div class="answer" id="dOut" aria-live="polite"></div>
+    </div></div>
+  </section>
+
+  <section class="panel" aria-labelledby="h4s">
+    <div class="step"><span class="n">4</span><div class="body">
+      <h2 id="h4s">Use the rewards card your station accepts</h2>
+      <p>Most brands give fuel rewards through a bank or retail loyalty programme. If you already have one of these, fill up at a brand that accepts it. Earn rates differ by programme and tier, so check yours.</p>
+      <div class="rewards" id="rewards"></div>
+    </div></div>
+  </section>
+
+  <section class="panel" aria-labelledby="h5s">
+    <h2 id="h5s">Your monthly fuel bill</h2>
+    <div class="form">
+      <label for="mKm">Km you drive a month<input id="mKm" type="number" step="50" min="0" value="1500"></label>
+      <label for="mCons">Your car's L/100 km<input id="mCons" type="number" step="0.1" min="0" value="9"></label>
+      <label for="mFuel">Fuel<select id="mFuel"><option value="d">Diesel 50ppm</option><option value="p95">Petrol 95</option><option value="p93">Petrol 93</option></select></label>
+    </div>
+    <div class="sums" id="mOut"></div>
+    <p class="small muted" id="mNote"></p>
+  </section>
+
+  <section class="panel" id="national" aria-labelledby="hnat">
+    <h2 id="hnat">Diesel across South Africa</h2>
+    <p>Cheapest and middle diesel 50ppm price in each city we track. Tap a city to see its stations.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>City</th><th class="n">Cheapest</th><th class="n">Middle</th><th class="n">Stations</th></tr></thead>
+      <tbody id="natRows"></tbody>
+    </table></div>
+    <p class="small muted" id="natNote"></p>
+  </section>
+
+  <section class="panel" id="news" aria-labelledby="hnews">
+    <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline">
+      <h2 id="hnews">Fuel news</h2>
+      <span class="small muted" id="newsMeta"></span>
+    </div>
+    <p>What's changing in the fuel sector, and what it means for what you pay. Newest first.</p>
+    <ul class="news" id="newsList"></ul>
+  </section>
+
+  <section class="panel sources" aria-labelledby="hsrc">
+    <h3 id="hsrc">Where these numbers come from</h3>
+    <ul id="srcList"></ul>
+  </section>
+
+  <footer>Need a wash? Washly's comes to you anywhere in Gqeberha · <a href="https://www.instagram.com/washlyscarwash/" target="_blank" rel="noopener">@washlyscarwash</a></footer>
+</main>
+
+<script>
+/* All data checked by hand. Update this block and republish. */
+const DATA={
+  updated:"2026-10-23",
+  official:{label:"October 2026",effective:"2026-10-07",
+    coastal:{p95:29.38,p93:29.01,d50w:31.93},inland:{p95:30.25,p93:29.88,d50w:32.80},
+    src:{name:"Department of Mineral and Petroleum Resources, via PetrolPrice.co.za",url:"https://petrolprice.co.za/fuel-price-today/"}},
+  forecast:{effective:"2026-11-04",dataDate:"2026-10-23",
+    market:{p95:1.27,p93:1.38,d50:1.24},levyCut:{petrol:1.50,diesel:3.00},
+    p95:-0.23,p93:-0.12,d50:-1.76,
+    note:"That's because government is cutting the fuel levy by R3.00 a litre on diesel and R1.50 on petrol.",
+    nextSteps:[["2026-12-02","fuel levy relief shrinks on 2 December, when the diesel cut drops from R3.00 to R1.50 a litre and petrol from R1.50 to R1.00, so fill up before then"],["2027-01-06","fuel levy relief ends after 5 January"]],
+    src:{name:"Central Energy Fund estimates via iWantFuel (23 Oct); levy cut reported by BusinessTech (21 Oct)",url:"https://businesstech.co.za/news/budget-speech/880760/petrol-price-relief-announced-for-south-africa/"}},
+  zones:{jhb:"inland",pta:"inland",cpt:"coastal",dbn:"coastal",gqb:"coastal",el:"coastal",blm:"inland",pmb:"inland",mbo:"inland",geo:"coastal",rus:"inland"},
+  stationsChecked:"2026-10-23",
+  stationsSrc:{name:"myTank, prices reported by drivers and station owners",url:"https://mytank.co.za/"},
+  stations:{"jhb":{"name":"Johannesburg (Sandton, Rosebank)","rows":[["Astron Energy Minty's Rosebank","Rosebank",34.63,"13-10-2026",10],["Ener-Gi Kew","Kew",34.92,"10-10-2026",13],["Engen Randburg Service Station","Kensington B",34.99,"20-10-2026",3],["BP Kew BP Express","Kew",35.8,"10-10-2026",13],["Engen Killarney","Killarney",35.18,"13-10-2026",10],["Engen Corlett Drive Service Station","Birnam",35.43,"14-10-2026",9],["Engen Iris Motors","Norwood",35.57,"10-10-2026",13],["BP Birnam Park","Birnam",35.65,"13-10-2026",10],["Total Illovo","Illovo",35.69,"10-10-2026",13],["Caltex Wendywood Service Station","Wendywood",35.88,"07-10-2026",16],["BP Melrose Arch","Birnam",35.97,"10-10-2026",13],["BP Grayston Drive","Sandown",35.97,"10-10-2026",13],["Engen Waverley Service Centre","Waverley",35.97,"07-10-2026",16],["Engen Oxford Road Convenience Centre","Melrose Estate",35.99,"07-10-2026",16],["Engen Sandton Convenience Centre","Sandown",35.99,"10-10-2026",13],["Caltex Lyndhurst","Lyndhurst",36.02,"13-10-2026",10],["Astron Energy Oaklands Motors","Oaklands",36.02,"13-10-2026",10],["Caltex Parkmore","Parkmore",36.04,"07-10-2026",16],["Shell Sandhurst Filling Station","Sandhurst",36.06,"13-10-2026",10],["Astron Energy Adolfs Service Station","Ferndale",36.1,"13-10-2026",10],["Engen Woodlands Service Centre","Woodmead",36.3,"10-10-2026",13],["Caltex Sandton Criste","Morningside",36.4,"08-10-2026",15],["Engen Randburg Jan Smut","Bordeaux",36.4,"10-10-2026",13],["Shell Glenhove Service Station","Houghton Estate",36.7,"13-10-2026",10],["Shell Sunny Motors","Greenside",36.22,"07-10-2026",16],["Engen William Nicol Convenience Centre","Glenadrienne",36.25,"13-10-2026",10],["Engen Hurlingham Court Service Station","Hurlingham",36.25,"10-10-2026",13],["Engen Bryanston Service City","Bryanston",36.25,"10-10-2026",13],["Engen CJ Service Station","Victory Park",36.34,"07-10-2026",16],["BP Zoo Lake Garage","Parkview",36.34,"13-10-2026",10],["Shell Larry's Motors","Craighall Park",36.34,"13-10-2026",10],["Shell Malboro Drive Eastbound","Marlboro",36.42,"08-10-2026",15],["Total Wynberg","Marlboro",36.44,"07-10-2026",16],["Shell Riverside Motor Bryanston","Bryanston",36.44,"12-10-2026",11],["Shell Takalane Service Station","Wynberg",36.57,"07-10-2026",16],["Shell Hyde Park Gardens","Hyde Park",36.65,"15-10-2026",8],["BP Louis Botha","Orange Grove",36.69,"10-10-2026",13],["Shell Ballyclare Auto","Bryanston",36.74,"15-10-2026",8],["BP Linden Park","Linden",36.84,"07-10-2026",16],["BP Hutton Hyde Park","Hyde Park",37,"10-10-2026",13],["BP Bryanston","Bryanston",37.49,"15-10-2026",8]]},"pta":{"name":"Pretoria","rows":[["Independent Metrofuel","Arcadia",32.75,"14-10-2026",9],["Total Hertzog Street Motors","Waverley",34.95,"08-10-2026",15],["Caltex Monument Park Motors","Monument Park",34.99,"08-10-2026",15],["Engen Pegasus Motors","Kilner Park",35.7,"08-10-2026",15],["BP Queens corner","Queenswood",35.8,"14-10-2026",9],["Total Totiusdal","Waverley",35.19,"08-10-2026",15],["Q4 Oberon Motors","Faerie Glen",35.42,"07-10-2026",16],["BP Ridgewood Motors","Lynnwood Ridge",35.44,"07-10-2026",16],["MBT Alphen Park","Alphen Park",35.49,"07-10-2026",16],["Total Energies Aurina Motors","Silverton",35.49,"08-10-2026",15],["BP Glenfair Service Station","Lynnwood",35.66,"15-10-2026",8],["Engen George Storrar Drive","Groenkloof",35.69,"07-10-2026",16],["Total Energies Ambassador Duty Fuel","Hatfield",35.73,"07-10-2026",16],["Total Newlands Service Station","Newlands",35.75,"07-10-2026",16],["BP Hazelwood","Hazelwood",35.75,"14-10-2026",9],["Engen Erasmusrand Convenience Centre","Erasmusrand",35.77,"08-10-2026",15],["Engen Hillcrest","Hillcrest",35.83,"14-10-2026",9],["Astron Energy Gezina","Gezina",35.85,"13-10-2026",10],["Total Energies Menlyn Filling Station","Menlyn",35.86,"14-10-2026",9],["Shell Poort Motors East Lynne","East Lynne",36,"07-10-2026",16],["Independent Distinct Fuel","Villiera",36,"08-10-2026",15],["Engen Menlyn Quick Stop North","Menlyn",36.07,"07-10-2026",16],["Engen Menlyn Quick Stop South","Menlyn",36.07,"07-10-2026",16],["Shell Salvokop Service Station","Salvokop",37.07,"14-10-2026",9],["Caltex Manor Motors","Lynnwood Manor",37.07,"07-10-2026",16],["Shell Glenwood Service Station","Lynnwood Glen",37.09,"07-10-2026",16]]},"cpt":{"name":"Cape Town","rows":[["Puma Fuel Station Buitengracht","City Centre",33.48,"07-10-2026",16],["Shell Bo-Kaap Service Station","City Centre",33.85,"07-10-2026",16],["BP Newlands","Newlands",33.89,"14-10-2026",9],["Shell Hassans Frank Summers","Belgravia",34,"07-10-2026",16],["Engen Settler's Way Service Station","Observatory",34,"07-10-2026",16],["Total Paarden Eiland","Paarden Eiland",34.8,"07-10-2026",16],["Engen Vineyard Service Station","Newlands",34.9,"07-10-2026",16],["Caltex Priclo Motors","Rugby",34.22,"07-10-2026",16],["Caltex Doncaster","Kenilworth",34.64,"14-10-2026",9],["Engen Sea Point Service Centre","Sea Point",34.67,"07-10-2026",16],["Caltex Rondebosch","Rondebosch",34.72,"07-10-2026",16],["Engen Sybrand Park Motors","Sybrand Park",34.73,"16-10-2026",7],["Astron Energy Kenilworth","Kenilworth",34.74,"07-10-2026",16],["Sasol Horizon Motors Exel","Kensington",34.75,"07-10-2026",16],["BP Pinelands","Pinelands",34.76,"07-10-2026",16],["Engen Regal Convenience Centre","Claremont",34.79,"14-10-2026",9],["Shell Canal Walk","Century City",34.84,"07-10-2026",16],["Engen Kloof Street Motors","Gardens",34.84,"07-10-2026",16],["Caltex Howard Centre Garage","Pinelands",34.85,"07-10-2026",16],["Total Observatory","Observatory",34.92,"07-10-2026",16],["Total Woodstock","Woodstock",34.93,"07-10-2026",16],["Caltex Paarden Eiland","Paarden Eiland",34.93,"07-10-2026",16],["BP Fleetway Service Centre","Paarden Eiland",34.93,"07-10-2026",16],["Total Energies Greenside Service Station","Ndabeni",34.93,"07-10-2026",16],["BP Milnerton Service Station","Tijgerhof",34.95,"07-10-2026",16],["Shell Mother City Motors","City Centre",34.98,"10-10-2026",13],["BP Somerset Road Service Station","De Waterkant",34.98,"10-10-2026",13],["Sasol Maitland","Maitland",34.99,"07-10-2026",16],["Engen Glendene Motors","Belgravia",34.99,"07-10-2026",16],["Caltex Salt River","Salt River",34.99,"07-10-2026",16],["BP Rondebosch Motors","Rondebosch",34.99,"07-10-2026",16],["Astron Energy District Six Service Station","Foreshore",34.99,"07-10-2026",16],["BP President Motors","Sea Point",35.03,"07-10-2026",16],["BP Cavendish","Claremont",35.04,"07-10-2026",16],["Shell Community Motors","Salt River",35.06,"07-10-2026",16],["Astron Energy Winch Motors","City Centre",35.07,"07-10-2026",16],["Engen Vredehoek Garage","Vredehoek",35.2,"07-10-2026",16],["BP Ben Vorster Motors","Maitland",35.2,"07-10-2026",16],["Astron Energy Masakhane Service Station","Joe Slovo Park",35.2,"07-10-2026",16],["Total Brooklyn","Brooklyn",35.7,"07-10-2026",16],["Shell Harfield Village Motors","Claremont",35.16,"14-10-2026",9],["Shell Campground Motors","Rondebosch",35.16,"07-10-2026",16],["Engen Oranje Service Centre","Gardens",35.18,"07-10-2026",16],["Astron Energy Kunshani Motors","Claremont",35.19,"14-10-2026",9],["Shell Marchios Service Station","Paarden Eiland",35.22,"07-10-2026",16],["Shell Paradise Place","Newlands",35.32,"07-10-2026",16],["Engen Zonnebloem Service Station","Zonnebloem",35.38,"07-10-2026",16],["Shell Paddys Service Centre","Gardens",35.48,"10-10-2026",13],["Shell Berkley Motors","Maitland",35.55,"07-10-2026",16],["Shell Grand Auto","Maitland",35.83,"07-10-2026",16],["Caltex Camps Bay","Bakoven",36.07,"07-10-2026",16]]},"dbn":{"name":"Durban","rows":[["Independent Sims Oil Services","Clairwood",32.32,"09-10-2026",14],["Total Energies Truck Stop","Morningside",33.09,"09-10-2026",14],["Sasol King George","Sydenham",33.25,"09-10-2026",14],["Engen Sydney Rd Truck Stop","Congela",33.83,"09-10-2026",14],["Engen Mitchell Park Convenience Centre","Morningside",34.8,"09-10-2026",14],["Shell Edwin Swales Motors","Rossburgh",34.18,"09-10-2026",14],["Engen Southway Convenience Centre","Sea View",34.82,"13-10-2026",10],["Total Broad Street Service Station","Durban Central",34.87,"09-10-2026",14],["Total On Broadway","Broadway",34.95,"07-10-2026",16],["Engen Springlake Convenience Centre","Umgeni Business Park",34.96,"09-10-2026",14],["Engen Sea Cow Lake Convenience Centre","Parlock",34.99,"08-10-2026",15],["Engen Brighton Beach Service Station","Ocean View",34.99,"08-10-2026",15],["Engen Sparks Road Service Station","Overport",35,"08-10-2026",15],["Engen Brickfield","Berea",35.03,"08-10-2026",15],["Engen Marathon Convenience Centre","Bulwer",35.05,"09-10-2026",14],["Shell Durban North Service Station","Prospect Hall",35.06,"07-10-2026",16],["Shell Bayside Motors","Durban Central",35.07,"08-10-2026",15],["Shell Auto Stop","Clairwood",35.08,"09-10-2026",14],["Shell Summerfields Auto Clinic","Montclair",35.09,"09-10-2026",14],["Caltex Cowey Centre Motors","Essenwood",35.1,"08-10-2026",15],["Caltex Bulwer Park Service Station","Bulwer",35.1,"09-10-2026",14],["Caltex Suburban Service Station","Cato Manor",35.1,"08-10-2026",15],["Shell Kenstel Motors","Springfield",35.2,"09-10-2026",14],["Engen Fairway Convenience Centre","Durban North",35.2,"08-10-2026",15],["BP Northend Service Station","Park Hill",35.2,"08-10-2026",15],["BP Moore Rd Service Station","Bulwer",35.3,"09-10-2026",14],["Shell Innes Junction","Morningside",35.7,"09-10-2026",14],["Engen Musgrave Motors","Musgrave",35.7,"09-10-2026",14],["Engen Gora's Convenience Centre","Briardene",35.8,"09-10-2026",14],["Shell Maydon Wharf","Maydon Wharf",35.13,"08-10-2026",15],["Sasol Umgeni Road","Stamford Hill",35.13,"09-10-2026",14],["Engen Bay Terrace Convenience Centre","South Beach",35.13,"08-10-2026",15],["Shell J and L Service Centre","Wentworth",35.18,"09-10-2026",14],["Sasol Booth Road West","Chesterville",35.18,"08-10-2026",15],["Engen Simjee's Convenience Centre","Palmiet",35.18,"08-10-2026",15],["Caltex Alice Street Service Station","Durban Central",35.19,"09-10-2026",14],["Shell Avondale Service Station","Essenwood",35.22,"09-10-2026",14],["Caltex Cherwell Service Station","Bluff",35.23,"08-10-2026",15],["BP Araf Fuel Centre","Bayhead",35.36,"09-10-2026",14],["Shell Field Street Service Station","Durban Central",35.37,"09-10-2026",14],["BP Bluff","Van Riebeeckpark",35.38,"13-10-2026",10],["BP Azmuth Motors","Reservoir Hills",35.38,"09-10-2026",14],["Engen 45th Cutting","Sherwood",35.43,"09-10-2026",14],["Shell Overport Motors","Overport",35.47,"08-10-2026",15],["Independent Fuel Esplanade Garage","Durban City Centre",35.47,"08-10-2026",15],["Independent Re-Fuel","North Beach",35.47,"08-10-2026",15],["BP Randles Road Service Station","Sydenham",35.49,"14-10-2026",9],["Caltex 45th Cutting","Sherwood",35.51,"08-10-2026",15],["Shell Clare Hills Service Station","Recreation",35.54,"08-10-2026",15],["BP Umbilo","Glenwood",35.56,"08-10-2026",15],["Engen Springfield Convenience Centre","Umgeni Business Park",35.67,"08-10-2026",15],["Shell Riverside Motors Durban North","Umgeni Park",35.69,"08-10-2026",15],["Engen Athlone Convenience Centre","Athlone",35.79,"08-10-2026",15],["Sasol Bellair Road","Wiggins",35.84,"14-10-2026",9],["Astron Energy Stag Service Station","Durban Central",35.85,"08-10-2026",15],["Total Rossburgh Service Station","Rossburgh",35.87,"09-10-2026",14],["Shell Maclo Motors","Bonela",35.89,"09-10-2026",14],["Engen Ushaka Convenience Centre","Point",35.94,"14-10-2026",9],["Astron Energy Vantage Motors","Umbilo",36.29,"09-10-2026",14],["Engen Welcome Convenience Centre","Sherwood",36.99,"08-10-2026",15]]},"gqb":{"name":"Gqeberha","rows":[["Caltex Newton Park","Newton Park",33.17,"09-10-2026",14],["Caltex St Georges Service Centre","Central",33.67,"19-10-2026",4],["Shell Dixie Motors","Sidwell",34.9,"13-10-2026",10],["Total Energies Deal Party","Deal Party",34.15,"07-10-2026",16],["BP Kabega Service Station","Francis Evatt Park",34.33,"07-10-2026",16],["Shell Gazelle Service Station","Sidwell",34.44,"13-10-2026",10],["Astron Energy Fernglen Service Station","Fernglen",34.55,"07-10-2026",16],["Astron Energy Hunters Retreat Service Station","Francis Evatt Park",34.55,"07-10-2026",16],["Quest Truckers Inn Port Elizabeth","Ferguson",34.57,"07-10-2026",16],["Engen Mount Pleasant Motors","Mount Pleasant",34.65,"07-10-2026",16],["Sasol Buffelsfontein","Greenshields Park",34.68,"07-10-2026",16],["Total Mustang Motors","Sydenham",34.74,"07-10-2026",16],["Shell JD Motors","Kensington",34.74,"16-10-2026",7],["Sasol Disa Road","Newton Park",34.77,"07-10-2026",16],["Caltex Westering Service Station","Linton Grange",34.84,"07-10-2026",16],["Engen Rink Auto Centre","Central",34.85,"13-10-2026",10],["Caltex La Roche","Humewood",34.89,"07-10-2026",16],["Caltex William Moffett Service Station","Overbaakens",34.92,"07-10-2026",16],["Engen Algoa Convenience Centre","Algoa Park",34.94,"07-10-2026",16],["Engen William Moffett","Walmer",34.94,"07-10-2026",16],["Astron Energy George Motors","Kwazakhele",35.03,"07-10-2026",16],["BP Drop In Service Station","Springdale",35.06,"07-10-2026",16],["Sasol Fig Tree","Springfield",35.1,"07-10-2026",16],["Engen Aerofill Convenience Centre","Airport",35.1,"07-10-2026",16],["Engen Tyre and Tube Service","Westering",35.6,"07-10-2026",16],["Caltex Woodlands","Woodlands",35.12,"07-10-2026",16],["BP Walmer Gardens","Walmer",35.13,"07-10-2026",16],["Caltex Walmer","Walmer",35.14,"07-10-2026",16],["Shell Struanway Service Station","KwaFord",35.15,"08-10-2026",15],["Shell Mercury Motors","North End",35.27,"07-10-2026",16],["Caltex Imsor Motors","Korsten",35.28,"07-10-2026",16],["Total Charlo","Charlo",35.43,"14-10-2026",9],["Sasol Summerstrand","Summerstrand",35.59,"07-10-2026",16],["Shell Sunridge Village","Sunridge Park",35.84,"14-10-2026",9],["Shell Walmer","Walmer",35.96,"07-10-2026",16],["Shell Aboos Service Station","Hillside",36.43,"07-10-2026",16]]},"el":{"name":"East London","rows":[["Independent Express Petroleum","Cambridge Village",33.08,"07-10-2026",16],["Engen Kempston Truck Stop","Brookville",34.03,"07-10-2026",16],["Engen Des Ally's Convenience Centre","Braelyn",34.5,"07-10-2026",16],["Engen Charles Harris Motors","Amalinda",34.8,"07-10-2026",16],["Astron Energy Buffalo Pass Motors","Havenhills",34.8,"07-10-2026",16],["Engen Whytes Auto","Quigney",34.64,"08-10-2026",15],["Independent Vukani Petroleum","Nompumelelo",34.68,"07-10-2026",16],["Ener-Gi VP Energy Centre","Amalinda",34.68,"07-10-2026",16],["BP Berea","Berea",34.84,"07-10-2026",16],["BP Beacon Bay","Beacon Bay",34.84,"07-10-2026",16],["BP Gately Motors","Gately",34.88,"07-10-2026",16],["Total Energies Settlers Way Motors","Gately",34.98,"07-10-2026",16],["Engen Connock Motors","Berea",35.03,"07-10-2026",16],["BP 222 Service Station","Southernwood",35.05,"08-10-2026",15],["Shell Hemingways Service Station","Cambridge Village",35.09,"15-10-2026",8],["Sasol Chisselhurst","Selborne",35.1,"07-10-2026",16],["Sasol Abbotsford","Abbotsford",35.2,"07-10-2026",16],["Caltex Beacon Bay Motors","Beaconhurst",35.3,"07-10-2026",16],["Total Beacon Bay","Beacon Bay",35.17,"13-10-2026",10],["Engen Beaconhill Convenience Centre","Beaconhurst",35.17,"07-10-2026",16],["Engen Settlers Way","Greenfields",35.24,"13-10-2026",10],["Shell Stirling Motors","Stirling",35.35,"07-10-2026",16],["Shell Grand Prix Motors","Greenfields",35.36,"07-10-2026",16],["Caltex Western Motors","Vincent",35.71,"07-10-2026",16],["Truckstop East London","Cambridge Village",35.79,"15-10-2026",8]]},"blm":{"name":"Bloemfontein","rows":[["Independent Nicsha Petroleum","Vista Park",32.53,"07-10-2026",16],["BP Kempston Truckstop","Ferreira",34.45,"08-10-2026",15],["BP Bloem Truck Stop","Hope Valley",34.45,"08-10-2026",15],["Total Bloemgate","Brandwag",34.92,"07-10-2026",16],["Kwagga Street Fuel Stop","Quaggafontein",35.05,"07-10-2026",16],["Shell R and B Motors","Heidedal",35.3,"08-10-2026",15],["Caltex Delta Service Station","Central",35.66,"07-10-2026",16],["Puma Langenhoven Park","Langenhoven Park",35.66,"07-10-2026",16],["Caltex Langenhoven Motors","Langenhoven Park",35.78,"07-10-2026",16],["BP Action Filling Station","Bochabela",35.92,"07-10-2026",16],["BP McGregor Road","Central",35.94,"07-10-2026",16],["BP Nantes Motors","Bayswater",35.95,"07-10-2026",16],["Shell Unitas Motors","Universitas",35.96,"07-10-2026",16],["Shell City Motors","Central",35.99,"07-10-2026",16],["Caltex Falckvlei Motors","Oranjesig",36.03,"07-10-2026",16],["Engen Gardenia Motors","Wilgehof",36.07,"07-10-2026",16],["Engen Spitskop","Spitskop",36.5,"07-10-2026",16],["BP Universitas Motors","Universitas",36.6,"07-10-2026",16],["Shell Bayswater Motors","Bayswater",36.14,"07-10-2026",16],["Engen Fuelarama","Fleurdal",36.15,"07-10-2026",16],["Total Tollas Stop","Universitas",36.18,"07-10-2026",16],["Engen Preller Motors","Dan Pienaar",36.22,"07-10-2026",16],["Engen Libra Motors","Noordhoek",36.22,"07-10-2026",16],["Total Westdene","Brandwag",36.24,"07-10-2026",16],["Engen Crossing Quick Stop","Brandwag",36.25,"07-10-2026",16],["Shell Gysie Pienaar Motors","Westdene",36.29,"07-10-2026",16],["Engen North Ridge Convenience Centre","Helicon Heights",36.29,"07-10-2026",16],["Engen Bloemfontein 1 Stop North","N1 North",36.33,"07-10-2026",16],["Sasol Technikon","Willows",36.35,"08-10-2026",15],["Engen Mangaung 1 Stop","Estoire",36.39,"08-10-2026",15],["Shell Fichardt Park Service Station","Fichardt Park",36.59,"07-10-2026",16],["Shell Gen De Wet Motors","Generaal De Wet",36.61,"07-10-2026",16],["Shell Mangaung Service Centre","Phahameng",36.64,"08-10-2026",15],["Shell Wentzel Motors","Central",36.84,"07-10-2026",16],["Engen Vyfster Motors","Universitas",36.88,"07-10-2026",16]]},"pmb":{"name":"Pietermaritzburg","rows":[["Astron Energy Kondeni Truck Stop","Mkondeni",33.02,"09-10-2026",14],["Independent Trimborne","Mkondeni",33.03,"09-10-2026",14],["Re-Fuel Truck Stop","Willowton",33.44,"09-10-2026",14],["Caltex Montys Motors","Willowton",33.47,"09-10-2026",14],["BP Manor Garage","Willowton",33.47,"09-10-2026",14],["Independent Maistrys Garage","Plessislaer",33.65,"09-10-2026",14],["Quantum Energy KZN Truck Stop","Willowton",33.77,"09-10-2026",14],["Shell Hans Schroder Motors","Midlands",34.01,"09-10-2026",14],["Total Willowton Motors","Willowton",34.19,"09-10-2026",14],["Shell Portland Motors and Pit Stop Express","Mkondeni",34.88,"09-10-2026",14],["Shell Greenwood Service Centre","Lester Park",34.96,"09-10-2026",14],["Shell Hermens Service Station","Central",35.07,"09-10-2026",14],["Sasol Pitstop","Scottsville",35.07,"09-10-2026",14],["Caltex Premier Service Station","Central",35.08,"09-10-2026",14],["Sasol Raisethorpe","Rosedale",35.08,"09-10-2026",14],["Total Southgate Service Station","Southgate",35.09,"09-10-2026",14],["Total Ashburton Garage","Ashburton",35.09,"09-10-2026",14],["Sasol Pat Duckham Motors","Central",35.1,"09-10-2026",14],["Sasol National Garage","Central",35.2,"09-10-2026",14],["BP Cascades Service Station","Chase Valley Downs",35.2,"08-10-2026",15],["Shell Montgomery Service Station","Athlone",35.6,"09-10-2026",14],["BP Raisethorpe","Raisethorpe",35.14,"08-10-2026",15],["BP Neil Woolridge Motors","Central",35.15,"09-10-2026",14],["Total The Autoworld","Scottsville",35.17,"09-10-2026",14],["Engen Basil Bure Convenience Centre","Central",35.19,"09-10-2026",14],["Engen Mayors Walk Service Station","Prestbury",35.25,"09-10-2026",14],["Shell Hilton Road Garage","Leonard",35.26,"09-10-2026",14],["BP Quarry Service Centre","Leonard",35.26,"08-10-2026",15],["Engen J Motors","Central",35.36,"14-10-2026",9],["Caltex Bird Sanctuary","Town Hill",35.43,"09-10-2026",14],["BP South Road Service Station","Bombay Heights",36.01,"08-10-2026",15],["Engen Haffejees Service Station","Central",36.1,"09-10-2026",14]]},"mbo":{"name":"Mbombela","rows":[["R40 Truckstop Nelspruit","White River",33.89,"08-10-2026",15],["Independent Oiltrek","Rocky Drift",33.94,"08-10-2026",15],["Engen Beta Kilo","Nelindia",33.98,"15-10-2026",8],["TVM Petroleum Nelspruit","Central",34.2,"07-10-2026",16],["Nkomazi Fuel and Oil","Nkomazi",34.15,"08-10-2026",15],["BP Sonpark","Sonpark",36.3,"08-10-2026",15],["Shell Dos Santos Filling Station","Central",36.4,"13-10-2026",10],["Engen Riverside Convenience Centre","Riverside",36.5,"08-10-2026",15],["BP Industrial Park","Riverside Park",36.5,"08-10-2026",15],["Engen Belladonna Motors","West Acres",36.12,"08-10-2026",15],["Sasol Axis Park","Riverside",36.13,"08-10-2026",15],["Engen El Madre Motors","Central",36.15,"08-10-2026",15],["Total Energies Steiltes","Steiltes",36.16,"08-10-2026",15],["Astron Energy Riverside","Riverside",36.21,"08-10-2026",15],["Shell Gateway Motors Nelspruit","Gateway",36.34,"15-10-2026",8],["Engen Rocky Creek","R40",36.41,"08-10-2026",15],["Total Nelbury","West Acres",36.54,"08-10-2026",15],["Sasol Nelspruit","Central",37.27,"08-10-2026",15]]},"geo":{"name":"George","rows":[["Total Sandkraal","Borcherds",33.18,"08-10-2026",15],["Astron Energy George","George Industria",33.33,"08-10-2026",15],["Sasol Roelf and Jacks Diensstasie","George Industria",33.36,"08-10-2026",15],["Astron Energy Sandkraal","Borcherds",33.36,"08-10-2026",15],["Total Energies Agri","Central",33.36,"08-10-2026",15],["Astron Energy Carlu Motors","Central",33.65,"08-10-2026",15],["Total Courtenay","Central",34.9,"08-10-2026",15],["Sasol George Highway","N2",34.9,"08-10-2026",15],["Caltex York Vulstasie","Central",34.24,"14-10-2026",9],["Caltex Four Way","Pacaltsdorp",34.33,"08-10-2026",15],["Astron Energy Eden","Central",34.49,"08-10-2026",15],["Total Londt Motors","Pacaltsdorp",34.56,"08-10-2026",15],["Engen Multi Motors","Levallia",34.89,"08-10-2026",15],["Engen Albertstraat Motors","Central",34.92,"08-10-2026",15],["Engen George Eco Stop","Central",34.93,"08-10-2026",15],["Sasol Oasis","Central",34.93,"08-10-2026",15],["Shell Kraaibosch","Kraaibosch",34.94,"08-10-2026",15],["BP TG Motors","George South",34.95,"08-10-2026",15],["BP N2 Filling Station","Kraaibosch",35.05,"08-10-2026",15],["Puma Thembalethu Service Station","Thembalethu",35.1,"08-10-2026",15]]},"rus":{"name":"Rustenburg","rows":[["Co-Op Total Obaro Rustenburg","Central",33.82,"10-10-2026",13],["Total Rustenburg","Central",34.02,"10-10-2026",13],["Caltex Andrew's Garage","Phokeng",34.4,"10-10-2026",13],["Lefaragatlhe Global Garage","Phokeng",34.95,"14-10-2026",9],["Elegant Fuels Kerk Straat","Central",35.12,"10-10-2026",13],["Viva Rustenburg","Central",35.28,"10-10-2026",13],["Engen Rapi Service Station","Rustenburg",35.29,"14-10-2026",9],["Engen Protea Park Motors","Protea Park",35.34,"13-10-2026",10],["BP Midtown Garage","Central",35.34,"10-10-2026",13],["Q4 Impala Motors","Boitekong",35.64,"10-10-2026",13],["Engen Rudan 1 Stop","R24 and R104",35.68,"16-10-2026",7],["BP Safarituine Diensstasie","Safarituine",35.94,"14-10-2026",9],["Total Energies Strumosa Garage","Geelhoutpark",37.14,"13-10-2026",10]]}},
+  rewards:[["Shell","Shell V+, Capitec Live Better, Discovery Bank, Discovery Insure"],["Sasol","Sasol Rewards, Absa Rewards"],["Engen","Clicks ClubCard, FNB eBucks"],["BP","Discovery Bank, Discovery Insure, Nedbank Greenbacks, Pick n Pay Smart Shopper"],["Caltex / Astron Energy","Standard Bank uCount"],["TotalEnergies","Dis-Chem Benefits, Sanlam Money Saver"]],
+  rewardsSrc:{name:"Programmes listed per station on myTank, checked 23 Oct 2026",url:"https://mytank.co.za/"},
+  news:[
+    {date:"2026-10-23",tag:"price",title:"Latest estimate: diesel down about R1.76 in November, petrol roughly flat",
+     body:"Central Energy Fund data up to 23 October points to market increases of about R1.24 for diesel 50ppm and R1.27 for petrol 95. Once the fuel levy cut is applied, that becomes a drop of about R1.76 for diesel and about 23c for 95. Final prices are announced a few days before 4 November.",
+     you:"If you drive diesel, filling up on or after 4 November should save you money.",
+     src:"iWantFuel",url:"https://www.iwantfuel.tech/index.php/estimated-fuel-price-changes-zar"},
+    {date:"2026-10-21",tag:"policy",title:"Government cuts the fuel levy for two months",
+     body:"In the Medium-Term Budget, Finance Minister Enoch Godongwana cut the general fuel levy by R3.00 a litre on diesel and R1.50 on petrol from 4 November to 1 December, then by R1.50 and R1.00 until 5 January. The relief costs about R10 billion. Pump prices hit records in October as the war involving Iran disrupted oil shipments through the Strait of Hormuz.",
+     you:"Lower prices from 4 November, but expect a step back up on 2 December and again after 5 January.",
+     src:"BusinessTech",url:"https://businesstech.co.za/news/budget-speech/880760/petrol-price-relief-announced-for-south-africa/"},
+    {date:"2026-10-19",tag:"public",title:"National shutdown called over fuel prices",
+     body:"The Concerned Citizens of South Africa called a national shutdown on 19 October over fuel prices. COSATU, which didn't back the shutdown, separately urged Treasury to use R10 billion set aside for the Central Energy Fund for fuel relief, which is what the Minister announced two days later.",
+     you:"Public pressure helped shape the levy cut now coming into effect.",
+     src:"EWN",url:"https://www.ewn.co.za/2026/10/19/as-calls-grow-for-fuel-price-shutdown-cosatu-demands-r10bn-relief"},
+    {date:"2026-10-07",tag:"price",title:"Petrol passes R30 a litre for the first time",
+     body:"October's adjustment raised petrol 95 by R3.33 and diesel 50ppm by R3.24 a litre, taking inland 95 to R30.25 and coastal 95 to R29.38.",
+     you:"These are today's official prices until 4 November.",
+     src:"Daily Maverick",url:"https://www.dailymaverick.co.za/article/2026-10-05-south-africa-petrol-price-hike-above-r30-per-litre/"},
+    {date:"2026-09-11",tag:"supply",title:"Economist warns limited refining leaves drivers exposed",
+     body:"KPMG economist Frank Blackmore warned that because South Africa now imports most of its refined fuel, global disruptions feed quickly into pump prices.",
+     you:"Expect prices to keep tracking world oil prices and the rand closely.",
+     src:"EWN",url:"https://ewn.co.za/2026/09/11/economist-warns-sa-s-limited-refining-capacity-could-leave-motorists-facing-steep-fuel-prices"},
+    {date:"2026-03-30",tag:"policy",title:"Competition Commission warns stations against price gouging",
+     body:"The Commission said diesel, whose pump price isn't regulated, is most at risk. Businesses may only raise prices in line with their real cost increases, and must cut them when costs fall.",
+     you:"If a diesel station doesn't pass on the November levy cut, you can report it to the Commission at ccsa@compcom.co.za or on WhatsApp 084 743 0000.",
+     src:"BusinessDay",url:"https://www.businessday.co.za/motoring/2026-03-30-watchdog-warns-over-fuel-price-gouging-in-south-africa/"}
+  ]
+};
+
+const $=s=>document.querySelector(s);
+const R=n=>"R"+n.toFixed(2);
+const sgn=v=>(v>0?"+":"−")+R(Math.abs(v));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const day=(iso,o={day:"numeric",month:"long"})=>new Date(iso+"T00:00").toLocaleDateString("en-GB",o);
+const today=new Date();today.setHours(0,0,0,0);
+const daysSince=iso=>Math.floor((today-new Date(iso+"T00:00"))/864e5);
+const daysUntil=iso=>Math.ceil((new Date(iso+"T00:00")-today)/864e5);
+const dmyToIso=s=>{const [d,m,y]=s.split("-");return `${y}-${m}-${d}`};
+const BRANDS=["Astron Energy","Ener-Gi","Elegant","Co-Op Total","Total Energies","TotalEnergies","Total","BP","Caltex","Engen","Independent","MBT","Puma","Q4","Quest","Sasol","Shell","Viva"];
+const brandOf=n=>{const b=BRANDS.find(b=>n.startsWith(b+" ")||n===b);if(!b)return"Independent";if(/^(Total|Co-Op Total|Total Energies)$/.test(b))return"TotalEnergies";if(b==="Elegant")return"Elegant Fuels";return b};
+
+/* build city data */
+const CITIES=Object.entries(DATA.stations).map(([id,c])=>{
+  const S=c.rows.map(([name,where,price,upd])=>({name,where,price,upd:dmyToIso(upd),brand:brandOf(name)})).sort((a,b)=>a.price-b.price||a.name.localeCompare(b.name));
+  const ps=S.map(s=>s.price),median=ps.length%2?ps[(ps.length-1)/2]:(ps[ps.length/2-1]+ps[ps.length/2])/2;
+  return {id,name:c.name,S,median,cheapest:S[0],zone:DATA.zones[id]||"inland"};
+});
+const byId=Object.fromEntries(CITIES.map(c=>[c.id,c]));
+
+let cityId="jhb";
+try{const s=localStorage.getItem("ff-city");if(s&&byId[s])cityId=s}catch(e){}
+{const h=location.hash.slice(1);if(byId[h])cityId=h}
+$("#city").innerHTML=CITIES.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("");
+
+/* freshness */
+(function(){
+  const msgs=[];const f=DATA.forecast;
+  if(daysUntil(f.effective)<=0)msgs.push(`Fuel prices changed on ${day(f.effective,{weekday:"long",day:"numeric",month:"long"})}. The official prices below are from before that change.`);
+  const age=daysSince(DATA.stationsChecked);
+  if(age>14)msgs.push(`Station prices were last checked ${age} days ago. Check the pump before you fill up.`);
+  if(msgs.length){$("#stale").textContent=msgs.join(" ");$("#stale").hidden=false}
+})();
+
+function renderMove(c){
+  const f=DATA.forecast,d=daysUntil(f.effective),wed=day(f.effective,{weekday:"long",day:"numeric",month:"long"});
+  const has=typeof f.d50==="number"&&typeof f.p95==="number";
+  const dir=v=>v<=-0.05?"drop":v>=0.05?"rise":"stay about the same";
+  if(d>0&&has){
+    const big=Math.abs(f.d50)>=Math.abs(f.p95)?["Diesel",f.d50]:["Petrol",f.p95];
+    const [who,v]=big;
+    $("#moveH").textContent=Math.abs(v)<0.3?`No need to rush: prices barely change on ${wed}`:v<0?`${who} drivers: wait for ${wed} if you can`:`${who} drivers: fill up before ${wed}`;
+    const part=(lbl,x)=>Math.abs(x)<0.05?`${lbl} should stay about the same`:`${lbl} is expected to ${dir(x)} about ${R(Math.abs(x))} a litre`;
+    $("#moveSub").textContent=`${part("Diesel",f.d50)} and ${part("petrol 95",f.p95)} on ${wed}${d<=14?`, in ${d} day${d===1?"":"s"}`:""}.${f.note?" "+f.note:""}`;
+    const save=Math.abs(v)*(who==="Diesel"?60:50);
+    $("#moveNums").innerHTML=`<span>Diesel: ${sgn(f.d50)}/L</span><span>95: ${sgn(f.p95)}/L</span>`+(Math.abs(v)>=0.3?`<span>${v<0?"Waiting":"Filling up first"} saves ≈ ${R(save).replace(".00","")} on ${who==="Diesel"?60:50} L</span>`:"");
+    const next=(f.nextSteps||[]).find(x=>daysUntil(x[0])>0&&x[0]>f.effective);
+    $("#moveMeta").textContent=`This is an estimate from Central Energy Fund data up to ${day(f.dataDate)}${f.market&&f.levyCut?`: the market is pushing diesel ${sgn(f.market.d50)} and petrol 95 ${sgn(f.market.p95)}, and the fuel levy cut takes off ${R(f.levyCut.diesel)} and ${R(f.levyCut.petrol)}`:""}. Final prices are announced a few days before. Diesel stations set their own pump prices, so check that yours follows.${next?` After that: ${next[1]}.`:""}`;
+  } else if(d>0){
+    $("#moveH").textContent=`Next price change: ${wed}`;
+    $("#moveSub").textContent="There's no reliable estimate yet. We'll add one once the Central Energy Fund's mid-month data is out.";
+    $("#moveNums").innerHTML="";
+    $("#moveMeta").textContent="In the meantime, pick your diesel station carefully and use your rewards card.";
+  } else {
+    const nx=(f.nextSteps||[]).find(x=>daysUntil(x[0])>0);
+    $("#moveH").textContent=nx?`Coming up on ${day(nx[0],{weekday:"long",day:"numeric",month:"long"})}`:`Fill up at ${c.cheapest.name} if you drive diesel`;
+    $("#moveSub").textContent=nx?nx[1]+".":`It's the cheapest diesel we found in ${c.name}, ${R(c.median-c.cheapest.price)} a litre below the middle price.`;
+    $("#moveNums").innerHTML="";
+    $("#moveMeta").textContent="Prices on this page are from before the latest change, until it's updated.";
+  }
+}
+
+function off(c){return DATA.official[c.zone]}
+function renderBoard(c){
+  const o=off(c);
+  $("#bCity").textContent=c.name;
+  const ref=["jhb","pta","cpt","dbn","gqb","el"].includes(c.id);
+  $("#bZone").textContent=ref?(c.zone==="coastal"?"Coastal price zone":"Inland (Gauteng) price zone"):`${c.zone==="coastal"?"Coastal":"Gauteng"} reference price · yours may differ slightly`;
+  $("#b95").innerHTML=`${R(o.p95)}<small>/L</small>`;
+  $("#b93").innerHTML=`${R(o.p93)}<small>/L</small>`;
+  $("#bD").innerHTML=`${R(c.cheapest.price)}<small>/L</small>`;
+  $("#bDsub").textContent=`Cheapest at ${c.cheapest.name} · middle price ${R(c.median)}`;
+  $("#bFoot").textContent=`Petrol: official prices from ${day(DATA.official.effective)}${["jhb","pta","cpt","dbn","gqb","el"].includes(c.id)?"":". Official petrol prices vary slightly between areas, so the nearest reference price is shown"}. Diesel: pump prices reported by drivers, checked ${day(DATA.stationsChecked)}.`;
+}
+
+let brand="All",showAll=false;
+function renderStations(c){
+  $("#stCity").textContent=c.name;
+  const by={};c.S.forEach(s=>(by[s.brand]??=[]).push(s.price));
+  const brands=Object.entries(by).map(([b,v])=>({b,n:v.length,lo:Math.min(...v),avg:v.reduce((a,x)=>a+x,0)/v.length})).sort((a,b)=>a.lo-b.lo);
+  if(brand!=="All"&&!by[brand])brand="All";
+  $("#stBrands").innerHTML=brands.map((x,i)=>`<div class="bt ${i===0?"best":""}"><b>${esc(x.b)}</b><span>${R(x.lo)}</span><small>${x.n>1?`cheapest of ${x.n} · avg ${R(x.avg)}`:"1 station"}</small></div>`).join("");
+  $("#brandChips").innerHTML=["All",...brands.map(x=>x.b)].map(b=>`<button type="button" class="chip" data-b="${esc(b)}" aria-pressed="${b===brand}">${esc(b)}</button>`).join("");
+  const rows=c.S.filter(s=>brand==="All"||s.brand===brand),shown=showAll||brand!=="All"?rows:rows.slice(0,10);
+  const min=c.cheapest.price;
+  $("#stRows").innerHTML=shown.map(s=>{const age=daysSince(s.upd);return `<tr class="${s===c.cheapest?"best":""}"><td><b>${esc(s.name)}</b><small>${esc(s.where)} · reported ${age<=0?"today":age===1?"yesterday":age+" days ago"}</small></td><td class="n">${R(s.price)}</td><td class="n">${s===c.cheapest?"Cheapest":"+"+R(s.price-min)}</td></tr>`}).join("");
+  const btn=$("#moreBtn");btn.hidden=brand!=="All"||rows.length<=10;btn.textContent=showAll?"Show the 10 cheapest":`Show all ${rows.length} stations`;
+  const spread=c.S[c.S.length-1].price-min,w=off(c).d50w;
+  $("#stNote").textContent=`${c.S.length} stations within 10 km of central ${c.name.replace(/ \(.*\)/,"")}, checked ${day(DATA.stationsChecked)}. Prices are reported by drivers and station owners, not the brands, so check the pump before a full tank. Cheapest to dearest is ${R(spread)} a litre, or ${R(spread*60)} on a 60 L fill-up. Official ${c.zone} wholesale price: ${R(w)}.`;
+}
+$("#brandChips").onclick=e=>{const b=e.target.closest("[data-b]");if(b){brand=b.dataset.b;renderStations(byId[cityId])}};
+$("#moreBtn").onclick=()=>{showAll=!showAll;renderStations(byId[cityId])};
+
+function detour(){
+  const near=+$("#dNear").value,far=+$("#dFar").value,lit=+$("#dLit").value,km=+$("#dKm").value,cons=+$("#dCons").value;
+  const out=$("#dOut");
+  if(!(near>0&&far>0&&lit>0)){out.className="answer";out.innerHTML="<span>Fill in both prices and the litres you'll buy.</span>";return}
+  const saving=(near-far)*lit,cost=km*cons/100*far,net=saving-cost;
+  const be=near>far&&cons>0?Math.round(((near-far)*lit)/(cons/100*far)*10)/10:0;
+  out.className="answer "+(net>0?"yes":"no");
+  out.innerHTML=net>0?`<b>Yes, you save ${R(net)}</b><span>${R(saving)} cheaper fuel, minus ${R(cost)} in fuel to get there. It's still worth it for detours up to ${be} km there and back.</span>`
+    :`<b>No, stay at your usual station</b><span>${near>far?`You'd save ${R(saving)} on fuel but spend ${R(cost)} getting there. It only pays off for detours under ${be} km there and back.`:"The other station isn't cheaper."}</span>`;
+}
+["#dNear","#dFar","#dLit","#dKm","#dCons"].forEach(s=>$(s).addEventListener("input",detour));
+
+function bill(){
+  const c=byId[cityId],o=off(c);
+  const km=+$("#mKm").value||0,cons=+$("#mCons").value||0,f=$("#mFuel").value,L=km*cons/100,fc=DATA.forecast,pre=daysUntil(fc.effective)>0&&typeof fc.d50==="number"&&typeof fc.p95==="number";
+  let cards=[];
+  if(f==="d"){
+    cards.push(["At the middle price in "+c.name.replace(/ \(.*\)/,""),R(L*c.median)],["At "+c.cheapest.name,R(L*c.cheapest.price)],["You save by choosing well",R(L*(c.median-c.cheapest.price)),true]);
+    $("#mNote").textContent=`${L.toFixed(0)} litres a month.`+(pre?` If November's estimate holds, the levy cut takes about ${R(-L*fc.d50)} a month off your diesel bill.`:"");
+  } else {
+    const p=f==="p95"?o.p95:o.p93,inc=f==="p95"?fc.p95:fc.p93;
+    cards.push(["At today's price",R(L*p)]);
+    if(pre)cards.push(["Expected from "+day(fc.effective),R(L*(p+inc))],[inc<0?"Saving each month":"Extra each month",R(Math.abs(L*inc)),inc<0]);
+    $("#mNote").textContent=`${L.toFixed(0)} litres a month. Every station near you charges the same for petrol, so timing your fill-up and rewards cards are where you save.`;
+  }
+  $("#mOut").innerHTML=cards.map(([l,v,s])=>`<div class="sum ${s?"save":""}"><span>${esc(l)}</span><b>${v}</b></div>`).join("");
+}
+["#mKm","#mCons","#mFuel"].forEach(s=>$(s).addEventListener("input",bill));
+
+function renderNational(){
+  const rows=CITIES.slice().sort((a,b)=>a.median-b.median);
+  $("#natRows").innerHTML=rows.map(c=>`<tr class="${c.id===cityId?"sel":""}"><td><a href="#${c.id}" data-c="${c.id}" style="color:var(--accent);font-weight:600">${esc(c.name)}</a><small>${c.zone==="coastal"?"Coastal":"Inland"} · cheapest at ${esc(c.cheapest.name)}</small></td><td class="n">${R(c.cheapest.price)}</td><td class="n">${R(c.median)}</td><td class="n">${c.S.length}</td></tr>`).join("");
+  const all=CITIES.flatMap(c=>c.S).length;
+  $("#natNote").textContent=`${all} stations across ${CITIES.length} cities, within 10 km of each city centre. Sorted by middle price. Coastal cities pay less for fuel because it costs less to transport from the ports.`;
+}
+$("#natRows").onclick=e=>{const a=e.target.closest("[data-c]");if(a){e.preventDefault();setCity(a.dataset.c);$("#stations").scrollIntoView({behavior:"smooth"})}};
+
+function setCity(id){
+  cityId=id;brand="All";showAll=false;$("#city").value=id;
+  try{localStorage.setItem("ff-city",id)}catch(e){}
+  const c=byId[id];
+  renderMove(c);renderBoard(c);renderStations(c);renderNational();
+  $("#dNear").value=c.median.toFixed(2);$("#dFar").value=c.cheapest.price.toFixed(2);detour();bill();
+}
+$("#city").onchange=()=>setCity($("#city").value);
+
+/* rewards, news, sources */
+$("#rewards").innerHTML=DATA.rewards.map(([b,p])=>`<div class="rw"><b>${esc(b)}</b><span>${esc(p)}</span></div>`).join("");
+const TAG={price:"Prices",policy:"Policy",supply:"Supply",public:"Public action"};
+$("#newsList").innerHTML=DATA.news.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(n=>{const d=new Date(n.date+"T00:00");return `<li><time datetime="${n.date}"><b>${d.getDate()}</b>${d.toLocaleDateString("en-GB",{month:"short",year:"numeric"})}</time><div class="it"><span class="tag ${n.tag}">${TAG[n.tag]||n.tag}</span><h3>${esc(n.title)}</h3><p>${esc(n.body)}</p><p class="you"><b>What it means for you:</b> ${esc(n.you)}</p><a href="${esc(n.url)}" target="_blank" rel="noopener">Read more on ${esc(n.src)} ↗</a></div></li>`}).join("");
+$("#newsMeta").textContent=`Updated ${day(DATA.updated)}`;
+const src=[[`Official prices, effective ${day(DATA.official.effective)}`,DATA.official.src],[`November estimate and fuel levy cut, data to ${day(DATA.forecast.dataDate)}`,DATA.forecast.src],[`Station diesel prices, checked ${day(DATA.stationsChecked)}`,DATA.stationsSrc],["Rewards programmes",DATA.rewardsSrc]];
+$("#srcList").innerHTML=src.map(([what,s])=>`<li><b style="color:var(--ink)">${esc(what)}:</b> <a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)}</a></li>`).join("")+`<li>News items each link to their own source.</li>`;
+
+setCity(cityId);
+</script>
+</body>
+</html>
