@@ -26,4 +26,15 @@ In `index.html`:
 - **Visitor counting:** near the top, put your GoatCounter code between the quotes in `const GOATCOUNTER_CODE="";` (for example `"fuelfriend"` if your dashboard is fuelfriend.goatcounter.com).
 - **Contact email:** in the `DATA` block, `contact:{email:""}`. While it's empty, the booking, fleet and advertising buttons point to Instagram.
 - **Promo:** `promo:{code:"FUELFRIEND10",offer:"10% off your first wash"}`. The Washly's card only shows when the visitor picks Gqeberha.
+- **Driving distances:** in the page script, `const ROUTING={orsKey:""};`. Paste a free openrouteservice.org API key between the quotes for real road distances and route lines. While it's empty, the "Use my location" finder estimates driving distance from straight-line distance and says so.
 - **Sponsor:** `sponsor:null`. To show a paid placement, replace `null` with `{name:"Business name",text:"One line about the offer",url:"https://...",cities:["gqb"]}`. Leave out `cities` to show it everywhere. It's always labelled "Sponsored" and never changes the price order.
+
+## Security notes
+
+- **Map library:** Leaflet 1.9.4 is served from this repository (`vendor/leaflet/`) rather than an outside server, so its code can't be swapped without a change here.
+- **Price check:** reported station prices are set aside, and named under the station list, if they are outside R20 to R50, more than R4.50 below or R4.00 above the city's middle price, or more than R2 below the official wholesale price. This stops a typo or a bad data feed from becoming the "cheapest" station.
+- **Account:** keep two-step verification on for the GitHub account that owns this repository.
+
+## Location and privacy
+
+The "Use my location" button asks the browser for the visitor's position. It is used only on the visitor's device to find nearby stations and is sent once to openrouteservice.org to measure driving distances (only when a key is set). Fuel Friend never stores or logs it.
