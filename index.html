@@ -179,6 +179,21 @@ a.dir:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .contact-line{font-size:13px;color:var(--muted)}
 .contact-line b{color:var(--ink);font-weight:600;user-select:all}
 @media (max-width:560px){.wash{grid-template-columns:1fr}}
+.bookbox{grid-column:1/-1;border-top:1px solid var(--line);padding-top:16px;display:flex;flex-direction:column;gap:14px}
+.bookbox .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px}
+.bookbox label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:var(--muted)}
+.bookbox input,.bookbox select,.bookbox textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-width:0}
+.bookbox input:focus,.bookbox select:focus,.bookbox textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+.bookbox textarea{resize:vertical;min-height:60px}
+.bookbox .acts{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.bookbox .err{color:var(--warn);font-weight:600;font-size:14px}
+.bookbox .msg{font-family:var(--f-data);font-size:13px;min-height:290px;background:var(--soft)}
+.bookbox>.cta,.bookbox>button.cta{align-self:flex-start}
+.bookbox h3{font-size:17px}
+.free{background:var(--soft);border-left:4px solid var(--ok);border-radius:8px;padding:10px 14px;font-size:15px}
+.acct{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:var(--soft);border-radius:10px;padding:10px 14px}
+.acct b{display:block}
+.linkbtn{font:inherit;font-size:inherit;font-weight:600;color:var(--accent);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
 .fleet{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center}
 @media (max-width:560px){.fleet{grid-template-columns:1fr}}
 .sponsor{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:var(--surface);display:flex;flex-direction:column;gap:4px}
@@ -234,7 +249,7 @@ footer a{color:var(--accent)}
       <p>Washly's comes to your home or office anywhere in Gqeberha. Quote <span class="code" id="promoCode"></span> for <span id="promoOffer"></span>.</p>
       <p class="contact-line" id="washContact"></p>
     </div>
-    <a class="cta" id="washBtn" target="_blank" rel="noopener" data-track="book-washlys">Book a wash</a>
+    <a class="cta" id="washBtn" href="https://washlys.vercel.app/?promo=FUELFRIEND10&amp;from=fuelfriend" data-track="book-washlys">Book in the Washly's app</a>
   </section>
 
   <div id="sponsorSlot"></div>
@@ -359,20 +374,19 @@ footer a{color:var(--accent)}
 /* All data checked by hand. Update this block and republish. */
 const DATA={
   /* Business settings. Leave email "" to fall back to Instagram. */
-  contact:{email:"",instagram:"https://www.instagram.com/washlyscarwash/"},
+  contact:{email:"washlyscarwash@gmail.com",instagram:"https://www.instagram.com/washlyscarwash/"},
   promo:{code:"FUELFRIEND10",offer:"10% off your first wash"},
   /* Paid placement. null = no sponsor shown. Example: {name:"Acme Tyres",text:"10% off tyres in Gqeberha",url:"https://...",cities:["gqb"]} (cities optional = everywhere) */
   sponsor:null,
-  updated:"2026-10-27",
-  official:{label:"October 2026",effective:"2026-10-07",
-    coastal:{p95:29.38,p93:29.01,d50w:31.93},inland:{p95:30.25,p93:29.88,d50w:32.80},
-    src:{name:"Department of Mineral and Petroleum Resources, via PetrolPrice.co.za",url:"https://petrolprice.co.za/fuel-price-today/"}},
-  forecast:{effective:"2026-11-04",dataDate:"2026-10-26",
-    market:{p95:1.20,p93:1.33,d50:1.29},levyCut:{petrol:1.50,diesel:3.00},
-    p95:-0.30,p93:-0.17,d50:-1.71,
-    note:"That's because government is cutting the fuel levy by R3.00 a litre on diesel and R1.50 on petrol.",
+  updated:"2026-11-13",
+  official:{label:"November 2026",effective:"2026-11-04",
+    coastal:{p95:29.37,p93:29.08,d50w:30.83},inland:{p95:30.24,p93:29.87,d50w:31.60},
+    src:{name:"Department of Mineral and Petroleum Resources, via BusinessTech and Stuff (3 Nov)",url:"https://businesstech.co.za/news/energy/882296/here-is-the-official-petrol-price-for-november-8/"}},
+  forecast:{effective:"2026-12-02",dataDate:"2026-11-06",
+    p95:-1.82,p93:-1.52,d50:1.15,
+    note:"Lower oil prices and a firmer rand point to cheaper petrol, but diesel is set to rise because the fuel levy relief shrinks on 2 December (by R1.50 a litre on diesel and 50c on petrol).",
     nextSteps:[["2026-12-02","fuel levy relief shrinks on 2 December, when the diesel cut drops from R3.00 to R1.50 a litre and petrol from R1.50 to R1.00, so fill up before then"],["2027-01-06","fuel levy relief ends after 5 January"]],
-    src:{name:"Central Energy Fund estimates via iWantFuel and TopAuto (26 Oct); levy cut reported by BusinessTech (21 Oct)",url:"https://businesstech.co.za/news/budget-speech/880760/petrol-price-relief-announced-for-south-africa/"}},
+    src:{name:"Central Energy Fund data for early November, reported by BusinessTech (6 Nov) and Stuff (7 Nov)",url:"https://businesstech.co.za/news/energy/882938/great-news-for-petrol-prices-in-south-africa-3/"}},
   zones:{jhb:"inland",pta:"inland",cpt:"coastal",dbn:"coastal",gqb:"coastal",el:"coastal",blm:"inland",pmb:"inland",mbo:"inland",geo:"coastal",rus:"inland"},
   stationsChecked:"2026-11-15",
   stationsSrc:{name:"myTank, prices reported by drivers and station owners",url:"https://mytank.co.za/"},
@@ -380,10 +394,18 @@ const DATA={
   rewards:[["Shell","Shell V+, Capitec Live Better, Discovery Bank, Discovery Insure"],["Sasol","Sasol Rewards, Absa Rewards"],["Engen","Clicks ClubCard, FNB eBucks"],["BP","Discovery Bank, Discovery Insure, Nedbank Greenbacks, Pick n Pay Smart Shopper"],["Caltex / Astron Energy","Standard Bank uCount"],["TotalEnergies","Dis-Chem Benefits, Sanlam Money Saver"]],
   rewardsSrc:{name:"Programmes listed per station on myTank, checked 23 Oct 2026",url:"https://mytank.co.za/"},
   news:[
-    {date:"2026-10-26",tag:"price",title:"Latest estimate: diesel down about R1.71 in November, petrol slightly cheaper",
-     body:"Central Energy Fund data at the start of the last week of October points to market increases of about R1.29 for diesel 50ppm and R1.20 for petrol 95. Once the fuel levy cut is applied, that becomes a drop of about R1.71 for diesel and about 30c for 95. Final prices are announced a few days before 4 November.",
-     you:"If you drive diesel, filling up on or after 4 November should save you money.",
-     src:"iWantFuel",url:"https://www.iwantfuel.tech/index.php/estimated-fuel-price-changes-zar"},
+    {date:"2026-11-12",tag:"price",title:"Mid-month data: bigger petrol cut likely in December, diesel close to flat",
+     body:"Newer Central Energy Fund data reported by IOL points to petrol 95 falling by about R2.62 a litre and 93 by about R2.35 on 2 December, even after 50c of levy relief falls away. Diesel 50ppm is tracking a small rise of about 16c once R1.50 returns to the fuel levy, and could even turn into a small cut if trends hold. Higher oil prices from any Middle East escalation could change this before month-end.",
+     you:"Petrol drivers can wait for December; diesel drivers lose little by filling up now, as the expected rise has shrunk.",
+     src:"IOL / The Mercury",url:"https://iol.co.za/mercury/news/2026-11-12-big-petrol-price-cuts-possible-in-december-but-diesel-remains-uncertain/"},
+    {date:"2026-11-06",tag:"price",title:"Early December forecast: petrol down about R1.80, diesel up about R1.15",
+     body:"Early-November Central Energy Fund data shows petrol over-recovering by about R2.32 a litre (95) and R2.02 (93), and diesel 50ppm by about 35c, after oil fell below $100 a barrel and the rand firmed. Once the fuel levy relief shrinks on 2 December, that points to petrol 95 about R1.82 cheaper and diesel 50ppm about R1.15 dearer. The figures can still change before the official announcement at the end of the month.",
+     you:"Diesel drivers should fill up before 2 December; petrol drivers can wait.",
+     src:"BusinessTech",url:"https://businesstech.co.za/news/energy/882938/great-news-for-petrol-prices-in-south-africa-3/"},
+    {date:"2026-11-03",tag:"price",title:"Official: diesel down R1.20 a litre from 4 November, petrol down 1c",
+     body:"The Department of Mineral and Petroleum Resources cut diesel 50ppm by R1.20 a litre and diesel 500ppm by R1.10 from 4 November, while petrol 93 and 95 fell by just 1c. The fuel levy cut of R3.00 on diesel and R1.50 on petrol was partly offset by higher product costs and a 48c-a-litre rise in the slate levy. Inland petrol 95 is now R30.24 and coastal R29.37.",
+     you:"Diesel is cheaper now, but expect a step back up on 2 December when the levy relief shrinks.",
+     src:"BusinessTech",url:"https://businesstech.co.za/news/energy/882296/here-is-the-official-petrol-price-for-november-8/"},
     {date:"2026-10-21",tag:"policy",title:"Government cuts the fuel levy for two months",
      body:"In the Medium-Term Budget, Finance Minister Enoch Godongwana cut the general fuel levy by R3.00 a litre on diesel and R1.50 on petrol from 4 November to 1 December, then by R1.50 and R1.00 until 5 January. The relief costs about R10 billion. Pump prices hit records in October as the war involving Iran disrupted oil shipments through the Strait of Hormuz.",
      you:"Lower prices from 4 November, but expect a step back up on 2 December and again after 5 January.",
@@ -444,9 +466,14 @@ const CITIES=Object.entries(DATA.stations).map(([id,c])=>{
   const zone=DATA.zones[id]||"inland";
   const all=c.rows.filter(r=>typeof r[2]==="number").map(r=>{const name=cleanName(String(r[0]));return {name,where:cleanWhere(r[1]),price:r[2],upd:dmyToIso(String(r[3])),brand:brandOf(name),lat:typeof r[5]==="number"?r[5]:null,lng:typeof r[6]==="number"?r[6]:null}});
   const {ok,out}=checkPrices(all,DATA.official[zone].d50w);
-  const S=ok.sort((a,b)=>a.price-b.price||a.name.localeCompare(b.name));
+  /* Prefer prices reported since the latest official change. With 8 or more, older reports are left out; with fewer, they stay but are marked. */
+  const eff=DATA.official.effective,fresh=ok.filter(s=>s.upd>=eff);
+  const useFresh=fresh.length>=8;
+  ok.forEach(s=>s.pre=s.upd<eff);
+  const S=(useFresh?fresh:ok).sort((a,b)=>a.price-b.price||a.name.localeCompare(b.name));
+  const olderOut=useFresh?ok.length-fresh.length:0,olderKept=useFresh?0:ok.length-fresh.length;
   const ps=S.map(s=>s.price),median=ps.length%2?ps[(ps.length-1)/2]:(ps[ps.length/2-1]+ps[ps.length/2])/2;
-  return {id,name:c.name,S,median,cheapest:S[0],zone,setAside:out};
+  return {id,name:c.name,S,median,cheapest:S[0],zone,setAside:out,olderOut,olderKept};
 });
 const byId=Object.fromEntries(CITIES.map(c=>[c.id,c]));
 
@@ -480,7 +507,8 @@ function renderMove(c){
     $("#moveMeta").textContent=`This is an estimate from Central Energy Fund data up to ${day(f.dataDate)}${f.market&&f.levyCut?`: the market is pushing diesel ${sgn(f.market.d50)} and petrol 95 ${sgn(f.market.p95)}, and the fuel levy cut takes off ${R(f.levyCut.diesel)} and ${R(f.levyCut.petrol)}`:""}. Final prices are announced a few days before. Diesel stations set their own pump prices, so check that yours follows.${next?` After that: ${next[1]}.`:""}`;
   } else if(d>0){
     $("#moveH").textContent=`Next price change: ${wed}`;
-    $("#moveSub").textContent="There's no reliable estimate yet. We'll add one once the Central Energy Fund's mid-month data is out.";
+    const known=(f.nextSteps||[]).find(x=>x[0]===f.effective);
+    $("#moveSub").textContent=(known?`One change is already confirmed: ${known[1]}. `:"")+"There's no reliable estimate yet for the rest of the change. We'll add one once the Central Energy Fund's mid-month data is out.";
     $("#moveNums").innerHTML="";
     $("#moveMeta").textContent="In the meantime, pick your diesel station carefully and use your rewards card.";
   } else {
@@ -515,10 +543,10 @@ function renderStations(c){
   $("#brandChips").innerHTML=["All",...brands.map(x=>x.b)].map(b=>`<button type="button" class="chip" data-b="${esc(b)}" aria-pressed="${b===brand}">${esc(b)}</button>`).join("");
   const rows=c.S.filter(s=>brand==="All"||s.brand===brand),shown=showAll||brand!=="All"?rows:rows.slice(0,10);
   const min=c.cheapest.price;
-  $("#stRows").innerHTML=shown.map(s=>{const age=daysSince(s.upd);return `<tr class="${s===c.cheapest?"best":""}"><td><b>${esc(s.name)}</b><small>${s.where?esc(s.where)+" · ":""}reported ${age<=0?"today":age===1?"yesterday":age+" days ago"}${s.lat!=null?" · "+dirLink(s):""}</small></td><td class="n">${R(s.price)}</td><td class="n">${s===c.cheapest?"Cheapest":"+"+R(s.price-min)}</td></tr>`}).join("");
+  $("#stRows").innerHTML=shown.map(s=>{const age=daysSince(s.upd);return `<tr class="${s===c.cheapest?"best":""}"><td><b>${esc(s.name)}</b><small>${s.where?esc(s.where)+" · ":""}reported ${age<=0?"today":age===1?"yesterday":age+" days ago"}${s.pre?` · <span style="color:var(--warn)">before the ${day(DATA.official.effective,{day:"numeric",month:"short"})} price change</span>`:""}${s.lat!=null?" · "+dirLink(s):""}</small></td><td class="n">${R(s.price)}</td><td class="n">${s===c.cheapest?"Cheapest":"+"+R(s.price-min)}</td></tr>`}).join("");
   const btn=$("#moreBtn");btn.hidden=brand!=="All"||rows.length<=10;btn.textContent=showAll?"Show the 10 cheapest":`Show all ${rows.length} stations`;
   const spread=c.S[c.S.length-1].price-min,w=off(c).d50w;
-  $("#stNote").textContent=`${c.S.length} stations within 10 km of central ${c.name.replace(/ \(.*\)/,"")}, checked ${day(DATA.stationsChecked)}. Prices are reported by drivers and station owners, not the brands, so check the pump before a full tank. Cheapest to dearest is ${R(spread)} a litre, or ${R(spread*60)} on a 60 L fill-up. Official ${c.zone} wholesale price: ${R(w)}.${c.setAside.length?` ${c.setAside.length} reported price${c.setAside.length>1?"s were":" was"} left out because ${c.setAside.length>1?"they look":"it looks"} wrong: ${c.setAside.map(x=>`${x.name} (${R(x.price)})`).join(", ")}.`:""}`;
+  $("#stNote").textContent=`${c.S.length} stations within 10 km of central ${c.name.replace(/ \(.*\)/,"")}, checked ${day(DATA.stationsChecked)}. Prices are reported by drivers and station owners, not the brands, so check the pump before a full tank. Cheapest to dearest is ${R(spread)} a litre, or ${R(spread*60)} on a 60 L fill-up. Official ${c.zone} wholesale price: ${R(w)}.${c.olderOut?` ${c.olderOut} older report${c.olderOut>1?"s":""} from before the ${day(DATA.official.effective,{day:"numeric",month:"long"})} price change ${c.olderOut>1?"are":"is"} left out.`:""}${c.olderKept?` Few drivers have reported since the ${day(DATA.official.effective,{day:"numeric",month:"long"})} price change here, so older prices are shown and marked.`:""}${c.setAside.length?` ${c.setAside.length} reported price${c.setAside.length>1?"s were":" was"} left out because ${c.setAside.length>1?"they look":"it looks"} wrong: ${c.setAside.map(x=>`${x.name} (${R(x.price)})`).join(", ")}.`:""}`;
 }
 $("#brandChips").onclick=e=>{const b=e.target.closest("[data-b]");if(b){brand=b.dataset.b;renderStations(byId[cityId])}};
 $("#moreBtn").onclick=()=>{showAll=!showAll;renderStations(byId[cityId])};
@@ -564,12 +592,13 @@ $("#natRows").onclick=e=>{const a=e.target.closest("[data-c]");if(a){e.preventDe
 const C=DATA.contact;
 const mail=(subject,body)=>C.email?`mailto:${C.email}?subject=${encodeURIComponent(subject)}${body?"&body="+encodeURIComponent(body):""}`:C.instagram;
 const via=C.email?`Email <b>${esc(C.email)}</b>`:`Message us on Instagram, <b>@washlyscarwash</b>`;
+/* Washly's bookings happen in the Washly's app (free customer accounts, live free times). The code is passed along in the link. */
+const APP_URL="https://washlys.vercel.app/";
 function renderWash(c){
   const on=c.id==="gqb";$("#wash").hidden=!on;if(!on)return;
   $("#promoCode").textContent=DATA.promo.code;$("#promoOffer").textContent=DATA.promo.offer;
-  $("#washBtn").href=mail("Book a Washly's wash",`Hi Washly's, I'd like to book a wash. Promo code: ${DATA.promo.code}\nSuburb:\nCar:\nPreferred day and time:`);
-  $("#washBtn").textContent=C.email?"Email to book":"Book on Instagram";
-  $("#washContact").innerHTML=`${via} to book. New customers only.`;
+  $("#washBtn").href=`${APP_URL}?promo=${encodeURIComponent(DATA.promo.code)}&from=fuelfriend`;
+  $("#washContact").textContent="Book in the Washly's app with a free account (it's not a subscription). Your code is filled in for you. Offer for new customers only.";
 }
 function renderFleet(c){
   $("#fleetBtn").href=mail(`Fleet diesel report: ${c.name.replace(/ \(.*\)/,"")}`,"Business name:\nNumber of vehicles:\nAreas you operate in:\nRoughly how much diesel a month:");
@@ -727,5 +756,5 @@ $("#srcList").innerHTML=src.map(([what,s])=>`<li><b style="color:var(--ink)">${e
 
 setCity(cityId);
 </script>
-</body>
-</html>
+
+</body></html>
