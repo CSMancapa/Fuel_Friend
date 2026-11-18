@@ -249,7 +249,7 @@ footer a{color:var(--accent)}
       <p>Washly's comes to your home or office anywhere in Gqeberha. Quote <span class="code" id="promoCode"></span> for <span id="promoOffer"></span>.</p>
       <p class="contact-line" id="washContact"></p>
     </div>
-    <a class="cta" id="washBtn" href="https://washlys.vercel.app/?promo=FUELFRIEND10&amp;from=fuelfriend" data-track="book-washlys">Book in the Washly's app</a>
+    <a class="cta" id="washBtn" href="https://washlyscarwash.co.za/?promo=FUELFRIEND10&amp;from=fuelfriend" data-track="book-washlys">Book in the Washly's app</a>
   </section>
 
   <div id="sponsorSlot"></div>
@@ -593,7 +593,7 @@ const C=DATA.contact;
 const mail=(subject,body)=>C.email?`mailto:${C.email}?subject=${encodeURIComponent(subject)}${body?"&body="+encodeURIComponent(body):""}`:C.instagram;
 const via=C.email?`Email <b>${esc(C.email)}</b>`:`Message us on Instagram, <b>@washlyscarwash</b>`;
 /* Washly's bookings happen in the Washly's app (free customer accounts, live free times). The code is passed along in the link. */
-const APP_URL="https://washlys.vercel.app/";
+const APP_URL="https://washlyscarwash.co.za/";
 function renderWash(c){
   const on=c.id==="gqb";$("#wash").hidden=!on;if(!on)return;
   $("#promoCode").textContent=DATA.promo.code;$("#promoOffer").textContent=DATA.promo.offer;
